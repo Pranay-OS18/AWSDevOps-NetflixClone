@@ -1,0 +1,32 @@
+version: 0.2
+env:
+  secrets-manager:
+    ACCESS_KEY: Clone-Sec:AccessKey
+    SECRET_KEY: Clone-Sec:SecretKey
+    LOGIN: Clone-Sec:Sonar-Token
+    HOST: Clone-Sec:HOST
+    Organization: Clone-Sec:Organization
+    Project: Clone-Sec:Project
+    AWS_ACCOUNT_ID: Clone-Sec:Account
+    IMAGE_REPO_NAME: Clone-Sec:IMAGE_REPO_NAME
+
+phases:
+  install:
+    runtimeVersion:
+      nodejs: 16
+  pre_build:
+    commands:
+      - apt-get update -y
+      - apt-get install wget apt-transport-https gnupg lsb-release jq unzip -y
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+      - unzip ./sonar-scanner-cli-5.0.1.3006-linux.zip
+      - export PATH=$PATH:./sonar-scanner-cli-5.0.1.3006-linux/bin/
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com
+  build:
+    commands:
+      - npm install
+      - npm sonar:sonar -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.organization=$Organization -Dsonar.projectKey=$Project
+      - docker build . -t $AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_REPO_NAME:${BUILD_NUMBER}
+  post_build:
+    commands:
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_REPO_NAME:${BUILD_NUMBER}
