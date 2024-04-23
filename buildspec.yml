@@ -27,7 +27,7 @@ phases:
   build:
     commands:
       - npm install
-      - sonar -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.organization=$Organization -Dsonar.projectKey=$Project
+      - sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.organization=$Organization -Dsonar.projectKey=$Project
       - docker build . -t $AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_REPO_NAME:${BUILD_NUMBER}
   post_build:
     commands:
