@@ -19,13 +19,15 @@ phases:
       - apt-get update -y
       - apt-get install wget apt-transport-https gnupg lsb-release jq unzip -y
       - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+      - sh $pwd
       - unzip ./sonar-scanner-cli-5.0.1.3006-linux.zip
+      - ls $pwd
       - export PATH=$PATH:./sonar-scanner-cli-5.0.1.3006-linux/bin/
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com
   build:
     commands:
       - npm install
-      - sonar:sonar -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.organization=$Organization -Dsonar.projectKey=$Project
+      - sonar -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.organization=$Organization -Dsonar.projectKey=$Project
       - docker build . -t $AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_REPO_NAME:${BUILD_NUMBER}
   post_build:
     commands:
