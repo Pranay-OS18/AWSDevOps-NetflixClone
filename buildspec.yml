@@ -31,3 +31,5 @@ phases:
   post_build:
     commands:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_BUILD_NUMBER
+      - aws eks update-kubeconfig --region ap-south-1 --name JS-App-Cluster
+      - kubectl apply -f svc-deploy.yaml
