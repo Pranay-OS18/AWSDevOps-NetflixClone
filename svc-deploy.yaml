@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: app-cn
-        image: $AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_BUILD_NUMBER
+        image: $IMAGE
         imagePullPolicy: Always
         ports:
         - containerPort: 80
